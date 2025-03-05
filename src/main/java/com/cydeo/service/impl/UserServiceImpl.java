@@ -105,6 +105,10 @@ public class UserServiceImpl implements UserService {
 
     private boolean checkIfUserCanBeDeleted(User user) {
 
+        if (user==null){
+            throw  new TicketingProjectException("User not found");
+        }
+
         switch (user.getRole().getDescription()) {
             case "Manager":
                 List<ProjectDTO> projectDTOList = projectService.readAllByAssignedManager(user);

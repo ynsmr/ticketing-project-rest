@@ -1,5 +1,6 @@
 package com.cydeo.controller;
 
+import com.cydeo.annotation.DefaultExceptionMessage;
 import com.cydeo.dto.UserDTO;
 import com.cydeo.dto.ResponseWrapper;
 import com.cydeo.service.UserService;
@@ -59,8 +60,9 @@ public class UserController {
     @DeleteMapping("/{username}")
     @RolesAllowed("Admin")
     @Operation(summary = "Delete User")
+    @DefaultExceptionMessage(defaultMessage = "Failed to delete user")
     public ResponseEntity<ResponseWrapper> deleteUser(@PathVariable("username") String username){
-        userService.deleteByUserName(username);
+        userService.delete(username);
         return ResponseEntity.ok(new ResponseWrapper("Successfully deleted the user.", HttpStatus.OK));
 
         //204 - HttpStatus.NO_CONTENT

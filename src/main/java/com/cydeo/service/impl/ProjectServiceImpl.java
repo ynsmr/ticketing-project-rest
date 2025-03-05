@@ -57,7 +57,6 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectMapper.convertToEntity(dto);
         projectRepository.save(project);
 
-
     }
 
     @Override

@@ -22,6 +22,8 @@ public class KeyCloakProperties {
     private String masterUser;
     @Value("${master.user.password}")
     private String masterUserPassword;
+    @Value("${master.realm}")
+    private String masterRealm;
     @Value("${master.client}")
     private String masterClient;
 

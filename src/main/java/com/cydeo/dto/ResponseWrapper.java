@@ -14,7 +14,7 @@ public class ResponseWrapper {
 
     private boolean success;
     private String message;
-    private Integer code;
+    private int code;
     private Object data;
 
     public ResponseWrapper(Object data, String message, HttpStatus httpStatus) {

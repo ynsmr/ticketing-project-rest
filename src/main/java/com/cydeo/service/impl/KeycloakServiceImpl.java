@@ -1,9 +1,8 @@
 package com.cydeo.service.impl;
 
-import com.cydeo.config.KeyCloakProperties;
+import com.cydeo.config.KeycloakProperties;
 import com.cydeo.dto.UserDTO;
-import com.cydeo.service.KeyCloakService;
-import jakarta.ws.rs.core.Response;
+import com.cydeo.service.KeycloakService;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -13,18 +12,20 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.keycloak.admin.client.CreatedResponseUtil.getCreatedId;
 
 @Service
-public class KeycloakServiceImpl implements KeyCloakService {
-    
-    private final KeyCloakProperties keyCloakProperties;
+public class KeycloakServiceImpl implements KeycloakService {
 
-    public KeycloakServiceImpl(KeyCloakProperties keycloakProperties) {
-        this.keyCloakProperties = keycloakProperties;
+
+    private final KeycloakProperties keycloakProperties;
+
+    public KeycloakServiceImpl(KeycloakProperties keycloakProperties) {
+        this.keycloakProperties = keycloakProperties;
     }
 
     @Override
@@ -47,15 +48,15 @@ public class KeycloakServiceImpl implements KeyCloakService {
 
         Keycloak keycloak = getKeycloakInstance();
 
-        RealmResource realmResource = keycloak.realm(keyCloakProperties.getRealm());
+        RealmResource realmResource = keycloak.realm(keycloakProperties.getRealm());
         UsersResource usersResource = realmResource.users();
 
         // Create Keycloak user
-        jakarta.ws.rs.core.Response result = usersResource.create(keycloakUser);
+        Response result= usersResource.create(keycloakUser);
 
         String userId = getCreatedId(result);
         ClientRepresentation appClient = realmResource.clients()
-                .findByClientId(keyCloakProperties.getClientId()).get(0);
+                .findByClientId(keycloakProperties.getClientId()).get(0);
 
         RoleRepresentation userClientRole = realmResource.clients().get(appClient.getId()) //
                 .roles().get(userDTO.getRole().getDescription()).toRepresentation();
@@ -73,7 +74,7 @@ public class KeycloakServiceImpl implements KeyCloakService {
 
         Keycloak keycloak = getKeycloakInstance();
 
-        RealmResource realmResource = keycloak.realm(keyCloakProperties.getRealm());
+        RealmResource realmResource = keycloak.realm(keycloakProperties.getRealm());
         UsersResource usersResource = realmResource.users();
 
         List<UserRepresentation> userRepresentations = usersResource.search(userName);
@@ -84,8 +85,8 @@ public class KeycloakServiceImpl implements KeyCloakService {
     }
 
     private Keycloak getKeycloakInstance(){
-        return Keycloak.getInstance(keyCloakProperties.getAuthServerUrl(),
-                keyCloakProperties.getMasterRealm(), keyCloakProperties.getMasterUser()
-                , keyCloakProperties.getMasterUserPassword(), keyCloakProperties.getMasterClient());
+        return Keycloak.getInstance(keycloakProperties.getAuthServerUrl(),
+                keycloakProperties.getMasterRealm(), keycloakProperties.getMasterUser()
+                , keycloakProperties.getMasterUserPswd(), keycloakProperties.getMasterClient());
     }
 }

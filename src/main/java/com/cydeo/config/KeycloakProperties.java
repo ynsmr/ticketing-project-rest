@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 @Setter
-public class KeyCloakProperties {
+public class KeycloakProperties {
 
     @Value("${keycloak.realm}")
     private String realm;
@@ -21,15 +21,10 @@ public class KeyCloakProperties {
     @Value("${master.user}")
     private String masterUser;
     @Value("${master.user.password}")
-    private String masterUserPassword;
+    private String masterUserPswd;
     @Value("${master.realm}")
     private String masterRealm;
     @Value("${master.client}")
     private String masterClient;
-
-
-
-
-
 
 }

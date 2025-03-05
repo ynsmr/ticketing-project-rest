@@ -15,10 +15,10 @@ public class ResponseWrapper {
     private Integer code;
     private Object data;
 
-    public ResponseWrapper(Object data, String message) {
+    public ResponseWrapper(Object data, String message, HttpStatus httpStatus) {
         this.data = data;
         this.message = message;
-        this.code = HttpStatus.OK.value();
+        this.code = httpStatus.value();
         this.success = true;
     }
 

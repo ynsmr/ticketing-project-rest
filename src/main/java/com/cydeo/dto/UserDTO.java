@@ -14,7 +14,6 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
 
-    @JsonIgnore
     private Long id;
     private String firstName;
     private String lastName;

@@ -4,7 +4,6 @@ import com.cydeo.dto.ResponseWrapper;
 import com.cydeo.dto.TaskDTO;
 import com.cydeo.enums.Status;
 import com.cydeo.service.TaskService;
-import com.cydeo.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class TaskController {
     private final TaskService taskService;
-    private final UserService userService;
 
     @GetMapping
     public ResponseEntity<ResponseWrapper> getTasks(){
@@ -64,7 +62,7 @@ public class TaskController {
                 .ok(new ResponseWrapper("Task is updated successfully", HttpStatus.OK));
     }
 
-    @GetMapping("/employee/archived-tasks")
+    @GetMapping("/employee/archive")
     public ResponseEntity<ResponseWrapper> getEmployeeArchivedTasks(){
         return ResponseEntity
                 .ok(new ResponseWrapper(taskService.listAllTasksByStatus(Status.COMPLETE), "Successfully retrieved archived tasks", HttpStatus.OK));

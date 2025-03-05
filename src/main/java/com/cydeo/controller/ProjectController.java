@@ -32,7 +32,7 @@ public class ProjectController {
         projectService.save(projectDTO);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new ResponseWrapper(projectService.getByProjectCode(projectDTO.getProjectCode()), "Successfully created the project", HttpStatus.CREATED));
+                .body(new ResponseWrapper("Successfully created the project", HttpStatus.CREATED));
     }
 
     @PutMapping

@@ -1,6 +1,7 @@
 package com.cydeo.controller;
 
 import com.cydeo.annotation.DefaultExceptionMessage;
+import com.cydeo.annotation.ExecutionTime;
 import com.cydeo.dto.UserDTO;
 import com.cydeo.dto.ResponseWrapper;
 import com.cydeo.service.UserService;
@@ -22,6 +23,7 @@ public class UserController {
     private final UserService userService;
 
 
+    @ExecutionTime
     @GetMapping
     @RolesAllowed("Admin")
     @Operation(summary = "Get Users ")
@@ -31,6 +33,7 @@ public class UserController {
     }
 
 
+    @ExecutionTime
     @GetMapping("/{username}")
     @RolesAllowed("Admin")
     @Operation(summary = "Get User by username")

@@ -1,6 +1,7 @@
 package com.cydeo.controller;
 
 import com.cydeo.dto.ProjectDTO;
+import com.cydeo.dto.ResponseDTO;
 import com.cydeo.dto.RoleDTO;
 import com.cydeo.dto.UserDTO;
 import com.cydeo.entity.Role;
@@ -14,10 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 
@@ -37,7 +41,7 @@ class ProjectControllerTest {
 
     @BeforeAll
     static void setUp() {
-        token = "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJVM3BaeTFmdjV3cHdBd3IyS2FCQVdCelRpYmhZbFNvR2JYQnhsQ3luQ3RVIn0.eyJleHAiOjE3NDE1Mzk2OTUsImlhdCI6MTc0MTUzNzg5NSwianRpIjoiMDc4YTYwYTEtMWU2OS00NDNkLTkxMzItZmMwOTE2MzY0NjkyIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9jeWRlby1kZXYiLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiZTVjYzAyYjktMWU1ZS00MzAzLThkYmUtZTBjNmE3Y2JjNTczIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoidGlja2V0aW5nLWFwcCIsInNlc3Npb25fc3RhdGUiOiI1YzE3ZDA3Ni00MTU4LTRhMTItOTc1My0xODQwOWIwOGZkN2MiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsib2ZmbGluZV9hY2Nlc3MiLCJ1bWFfYXV0aG9yaXphdGlvbiIsImRlZmF1bHQtcm9sZXMtY3lkZW8tZGV2Il19LCJyZXNvdXJjZV9hY2Nlc3MiOnsidGlja2V0aW5nLWFwcCI6eyJyb2xlcyI6WyJNYW5hZ2VyIl19LCJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwic2lkIjoiNWMxN2QwNzYtNDE1OC00YTEyLTk3NTMtMTg0MDliMDhmZDdjIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJNaWNoZWFsIEpvaG5zb24iLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJtaWtlIiwiZ2l2ZW5fbmFtZSI6Ik1pY2hlYWwiLCJmYW1pbHlfbmFtZSI6IkpvaG5zb24iLCJlbWFpbCI6Im1pa2VAbWlrZW1mLmNvbSJ9.hMpiDCW2UTb7jzJH9Z0TQ_KNZWRzSPDTKRsNThzCMCy-0gmUuKs1uud1OSYHCzroSmJ5tzAxw5nbn8K21M9GVrULtU3mQmUzLlgfe29wGW3pdsrpVoLKGINenAdojaV5zy5Lz8iN992WwZMRsx24uZeSvf0OqnC7P-tWBZYXt8tLU0-wnWg4-3qvFGEmaVOuJMRwEuFTfDisG2bk2szHENNULZGe98egEe-3y1wZm8uSnhjCnyUuGACq_uhka6Q-kbXGgFQ0bIOLM-06lGl4HXI7FOJk0fdtxZjY92u9CNI9JcssHgCMrEYX6b2gwTodp1tqMmYHjf_1TpO1KPLU6Q";
+        token = "Bearer " + makeRequest();
         userDTO = UserDTO.builder()
                 .id(2L)
                 .firstName("ozzy")
@@ -74,7 +78,7 @@ class ProjectControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].projectCode").exists())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].assignedManager").exists());
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data[0].assignedManager.userName").isNotEmpty());
     }
 
     @Test
@@ -94,11 +98,22 @@ class ProjectControllerTest {
 
         mvc.perform(MockMvcRequestBuilders
                 .put("/api/v1/project")
-                .header("Aithorization", token)
+                .header("Authorization", token)
                 .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(toJsonString(projectDTO)))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("message").value("Project Successfully updated."));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Project Successfully updated."));
+    }
+
+    @Test
+    void givenTokenDeleteProject() throws Exception {
+
+        mvc.perform(MockMvcRequestBuilders
+                .delete("/api/v1/project/"+ projectDTO.getProjectCode())
+                .header("Authorization", token)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
 
@@ -112,6 +127,39 @@ class ProjectControllerTest {
             throw new RuntimeException(e);
         }
     }
+
+    private static String makeRequest() {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("grant_type", "password");
+        map.add("client_id", "ticketing-app");
+        map.add("client_secret", "GhRcJvBS7L1NsmuHqeuHSSbEUt7jPEdz");
+        map.add("username", "mike");
+        map.add("password", "151690");
+        map.add("scope", "openid");
+
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(map, headers);
+
+        ResponseEntity<ResponseDTO> response =
+                restTemplate.exchange("http://localhost:8080/realms/cydeo-dev/protocol/openid-connect/token",
+                        HttpMethod.POST,
+                        entity,
+                        ResponseDTO.class);
+
+        if (response.getBody() != null) {
+            return response.getBody().getAccess_token();
+        }
+
+        return "";
+
+    }
+
+
 
 
 }
